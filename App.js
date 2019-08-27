@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, Text, AsyncStorage } from 'react-native'
 import Header from './components/header'
 import TaskList from './components/task-list'
 import ButtonAddTask from './components/button-add-task'
 import MenuTask from './components/menu-task'
 import { TASK } from './model'
 import TextPrompt from './components/text-prompt'
+import { style } from './style'
+
+const storageKey='taskList'
 
 export default class App extends Component {
 
@@ -19,6 +22,20 @@ export default class App extends Component {
       isRenamePromptVisible:false,
       idGenerator: 0
     }
+  }
+
+  componentWillMount = () => {
+    AsyncStorage.getItem(storageKey).then( storedTaskList => {
+      if( storedTaskList ){
+        this.setState({ 
+          taskList: JSON.parse(storedTaskList)
+        }, () => {
+          this.setState({ 
+            idGenerator: this.state.taskList[this.state.taskList.length - 1].id + 1 
+          })
+        })
+      }
+    })
   }
 
   toggleMenuTaskVisibility = task => {
@@ -40,8 +57,11 @@ export default class App extends Component {
     this.setState({
       taskList: list, 
       currentTask:{}
-    })
+    },() => {
     this.toggleMenuTaskVisibility()
+    this.saveTaskList()
+    }
+    )
   }
 
   changeStatusCurrentTask = () => {
@@ -55,7 +75,7 @@ export default class App extends Component {
        taskList: this.state.taskList,
        menuTaskVisibility: false,
        currentTask:{}
-     })
+     }, () => this.saveTaskList() )
   }
 
   hideAddPrompt = () => {
@@ -75,7 +95,7 @@ export default class App extends Component {
       taskList: [...this.state.taskList, task],
       isAddPromptVisible: false,
       idGenerator: this.state.idGenerator + 1
-    })
+    }, () => this.saveTaskList())
   }
 
   displayAddPrompt = () => {
@@ -106,19 +126,33 @@ export default class App extends Component {
 
      this.setState({
        taskList: this.state.taskList },
-      () => this.hideRenamePrompt()
+      () => {
+        this.hideRenamePrompt()
+        this.saveTaskList()
+      }
     )
+  }
+
+  saveTaskList = () => {
+    AsyncStorage.setItem(storageKey, JSON.stringify(this.state.taskList))
+  }  
+  renderTaskList = () => {
+    return this.state.taskList.length > 0 ?  (
+      <TaskList 
+          onPressCallBack={ this.toggleMenuTaskVisibility } 
+          onLongPressCallBack={ this.displayRenameTask }
+          taskList={ this.state.taskList } />
+    )
+    : (<View style={ style.noTask } ><Text>Cliquer sur le bouton pour créer une nouvelle tâche</Text></View>)
   }
 
   render() {
     return (
       <View style={{ flex: 1 }}>
         <Header content="Liste de tâches"/>
+        
         <ScrollView>
-          <TaskList 
-          onPressCallBack={ this.toggleMenuTaskVisibility } 
-          onLongPressCallBack={ this.displayRenameTask }
-          taskList={ this.state.taskList } />
+          { this.renderTaskList() }
         </ScrollView>
         <MenuTask 
         isVisible={ this.state.menuTaskVisibility } 

@@ -3,7 +3,8 @@
   "displayName": "To-Do-List",
   "expo": {
     "name": "todolist",
-    "slug": "expo-template-bare",
+    "icon": "./logo-icon.png",
+    "slug": "todolist",
     "privacy": "unlisted",
     "sdkVersion": "34.0.0",
     "version": "1.0.0",
@@ -12,6 +13,12 @@
       "ios",
       "android",
       "web"
-    ]
+    ],
+    "ios": {
+      "bundleIdentifier": "com.mickaelsorhaindo.todolist"
+    },
+    "android": {
+      "package": "com.mickaelsorhaindo.todolist"
+    }
   }
 }
