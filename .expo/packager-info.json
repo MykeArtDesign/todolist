@@ -1,8 +1,8 @@
 {
   "devToolsPort": 19002,
   "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 95544,
+  "packagerPort": null,
+  "packagerPid": null,
   "expoServerNgrokUrl": "https://hx-fa5.anonymous.todolist.exp.direct",
   "packagerNgrokUrl": "https://packager.hx-fa5.anonymous.todolist.exp.direct",
   "ngrokPid": 95553
